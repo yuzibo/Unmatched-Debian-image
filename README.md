@@ -139,7 +139,7 @@ sudo dd if=nvme-rootfs.img of=/dev/[nvme-device] bs=64k iflag=fullblock oflag=di
 
 ## bootloader on sd card
 At present, the bootloader still needs to be dd to the sd card to run on nvme. Because I have not to
-confirm the sd u-boot image is working, so you can use the pre-built image to dd it to sd cards.
+confirm the sd u-boot image is working, so you can use the pre-built [image](./image/sd-uboot.img.tar.gz) to dd it to sd cards.
 
 ```bash
 sudo dd if=sd-uboot.img of=/dev/sdcard-device bs=64k iflag=fullblock oflag=direct conv=fsync status=progress
