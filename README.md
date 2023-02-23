@@ -5,10 +5,12 @@ The host OS is Debian sid on x86.
 
 # 0
 
-## Ready for nvme-rootfs image file:
+## Ready for nvme-rootfs and sd-uboot blank image files:
 
 ```bash
 sudo dd if=/dev/zero of=nvme-rootfs.img bs=1M count=4096
+
+sudo dd if=/dev/zero of=sd-uboot.img bs=1M count=6
 
 ```
 
@@ -17,12 +19,22 @@ sudo dd if=/dev/zero of=nvme-rootfs.img bs=1M count=4096
 sudo sgdisk -g --clear --set-alignment=1 \
        --new=1:34:-1   --change-name=1:'rootfs'        --typecode=1:0x0700 --attributes=3:set:2  \
         nvme-rootfs.img
+
+sudo sgdisk -g --clear --set-alignment=1 \
+       --new=1:34:+1M:    --change-name=1:'u-boot-spl'    --typecode=1:5b193300-fc78-40cd-8002-e86c45580b47 \
+       --new=2:2082:+4M:  --change-name=2:'opensbi-uboot' --typecode=2:2e54b353-1271-4842-806f-e436d6af6985 \
+        sd-uboot.img
 ```
 
 ## Mount image in loop device
 ```bash
+# nvme
 sudo losetup --partscan --find --show nvme-rootfs.img
 /dev/loop0
+
+# sd 
+sudo losetup --partscan --find --show sd-uboot.img
+/dev/loop1
 ```
 
 ## format partitions
@@ -124,22 +136,33 @@ Remove bash history
 ```bash
 sudo rm /mnt/root/.bash_history
 ```
-## Finish and write image to nvme
+
+## Setup bootloaders on sd card
+```bash
+sudo dd if=/mnt/usr/lib/u-boot/sifive_unmatched/u-boot-spl.bin of=/dev/loop1p1 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
+
+sudo dd if=/mnt/usr/lib/u-boot/sifive_unmatched/u-boot.itb of=/dev/loop1p2 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
+```
+
+## Finish and write image to nvme and sd card
 
 ```bash
 sudo umount /mnt
 
 sudo losetup -d /dev/loop0
 
+sduo losetup -d /dev/loop1
+
 # take care of writing to the correct nvme-device
 sudo dd if=nvme-rootfs.img of=/dev/[nvme-device] bs=64k iflag=fullblock oflag=direct conv=fsync status=progress
+
+sudo dd if=sd-uboot.img of=/dev/[sd-device] bs=64k iflag=fullblock oflag=direct conv=fsync status=progress
 ```
 
 # Notes
 
 ## bootloader on sd card
-At present, the bootloader still needs to be dd to the sd card to run on nvme. Because I have not to
-confirm the sd u-boot image is working, so you can use the pre-built [image](./image/sd-uboot.img) to dd it to sd cards.
+At present, the bootloader still needs to be dd to the sd card to run on nvme. You can flash fresh sd-uboot img follow above instructions or you can use the pre-built [image](./image/sd-uboot.img) to dd it to sd cards.
 
 ```bash
 sudo dd if=sd-uboot.img of=/dev/sdcard-device bs=64k iflag=fullblock oflag=direct conv=fsync status=progress
