@@ -159,6 +159,10 @@ echo 'yes' | parted ---pretend-input-tty /dev/nvme0n1 resizepart 3  20GB
 resize2fs /dev/nvme0n1p1
 ```
 
-## TOdO
+## TODO
 
-Docker ci scripts
+Docker ci scripts (WIP)
+
+# Thanks 
+
+Thanks to [wangliu-iscas](https://github.com/wangliu-iscas) for testing.
