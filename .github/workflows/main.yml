@@ -32,4 +32,3 @@ jobs:
             files: |
               image/nvme-rootfs*.img.xz
               image/sd-uboot*.img
-              README.md
