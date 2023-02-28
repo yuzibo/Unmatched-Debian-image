@@ -7,9 +7,7 @@ jobs:
   build-all-os:
     runs-on: ubuntu-latest
     permissions:
-      actions: read|write|none
-      checks: read|write|none
-      contents: read|write|none
+      contents: write
     steps:
         - uses: actions/checkout@v2
 
