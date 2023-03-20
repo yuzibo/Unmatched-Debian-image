@@ -51,9 +51,21 @@ Maye you need reszie nvme volume with cmd below:
 
 ```
 parted -f -s /dev/nvme0n1 print
-echo 'yes' | parted ---pretend-input-tty /dev/nvme0n1 resizepart 1  20GB
+echo 'yes' | parted ---pretend-input-tty /dev/nvme0n1 resizepart 1 100% 
 resize2fs /dev/nvme0n1p1
 ```
+# sync time
+If you see the info after `apt update`:
+
+```
+E: Release file for https://mirror.iscas.ac.cn/debian-ports/dists/sid/InRelease is not valid yet (invalid for another 48d 6h 38min 42s).
+```
+Please fix it by `ntpdate`:
+
+```
+sudo ntpdate cn.pool.ntp.org
+```
+
 # Thanks
 
 Thanks to [wangliu-iscas](https://github.com/wangliu-iscas) for testing.
