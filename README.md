@@ -19,6 +19,7 @@ Two image files will be generated into `image`:
 nvme-rootfs.img.xz  sd-uboot.img
 ```
 
+# How to install image
 The `nvme-rootfs.img` you can use cmd below to flash to nvme:
 
 ```bash
@@ -54,6 +55,8 @@ parted -f -s /dev/nvme0n1 print
 echo 'yes' | parted ---pretend-input-tty /dev/nvme0n1 resizepart 1 100% 
 resize2fs /dev/nvme0n1p1
 ```
+(Better to reboot after this operation)
+
 # sync time
 If you see the info after `apt update`:
 
