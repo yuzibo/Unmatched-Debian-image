@@ -70,7 +70,7 @@ u-boot-update
 rm -rf /etc/apt/sources.list.d/multistrap-debian.list
 
 cat > /etc/apt/sources.list <<EOF
-deb https://mirror.iscas.ac.cn/debian-ports sid main non-free-firmware
+deb https://mirror.iscas.ac.cn/debian sid main non-free-firmware
 EOF
 
 #
