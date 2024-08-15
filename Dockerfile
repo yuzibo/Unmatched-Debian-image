@@ -18,7 +18,7 @@ RUN --mount=type=cache,sharing=shared,target=/var/cache \
         git gperf kmod libexpat-dev \
         libgmp-dev libmpc-dev libmpfr-dev libssl-dev \
         libtool mmdebstrap multistrap openssl parted \
-        patchutils python3 python3-dev python3-distutils \
+        patchutils python3 python3-dev \
         python3-setuptools qemu-user-static swig \
         systemd-container texinfo zlib1g-dev wget
 
