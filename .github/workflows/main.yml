@@ -5,14 +5,14 @@ on:
       - '*'
 jobs:
   build-all-os:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
         - uses: actions/checkout@v2
 
         - name: Install depends
-          run: sudo apt install -y qemu-system-misc
+          run: sudo apt install -y qemu-system-misc docker-compose
 
         - name: Prepare
           run: |
