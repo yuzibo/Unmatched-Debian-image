@@ -21,11 +21,11 @@ jobs:
         - name: Build
           run: |
             export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
-            docker-compose build
+            docker compose build
         - name: Create Nvme Image
           run: |
             export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 nvme
-            docker-compose up nvme 
+            docker compose up nvme 
             ls -l image/*
         - name: Release
           uses: softprops/action-gh-release@v1
