@@ -12,7 +12,7 @@ jobs:
         - uses: actions/checkout@v2
 
         - name: Install depends
-          run: sudo apt install -y qemu-system binfmt-support docker-compose
+          run: sudo apt install -y qemu-system-misc
 
         - name: Prepare
           run: |
