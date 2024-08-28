@@ -1,3 +1,12 @@
+# Update
+
+Now some changes from Debian lead to the image for Unmatched [pre-built](https://wiki.debian.org/InstallingDebianOn/SiFive/%20HiFiveUnmatched#Preparing_disk_image) does not work.
+
+You can download the refreshed image for nvme from my personally [site](http://vimer.7766.org:63015/images/Unmatched-debian/)
+
+The passwd and user are the same with below.
+
+
 # Depends
 ```bash
 sudo apt install -y qemu-user-static qemu-system qemu-utils qemu-system-misc binfmt-support
