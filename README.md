@@ -1,5 +1,9 @@
 # Update
 
+Now you can use [mkimg-unmatched-debian.sh](./scripts/mkimg-unmatched-debian.sh) to generate one rootfs for nvme, more defail please see [README](./scripts/README.md)
+
+2024/08/28
+
 Now some changes from Debian lead to the image for Unmatched [pre-built](https://wiki.debian.org/InstallingDebianOn/SiFive/%20HiFiveUnmatched#Preparing_disk_image) does not work.
 
 You can download the refreshed image for nvme from my personally [site](http://vimer.7766.org:63015/images/Unmatched-debian/)
