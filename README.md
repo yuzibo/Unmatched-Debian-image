@@ -6,10 +6,7 @@ Now you can use [mkimg-unmatched-debian.sh](./scripts/mkimg-unmatched-debian.sh)
 
 Now some changes from Debian lead to the image for Unmatched [pre-built](https://wiki.debian.org/InstallingDebianOn/SiFive/%20HiFiveUnmatched#Preparing_disk_image) does not work.
 
-You can download the refreshed image for nvme from my personally [site](http://vimer.7766.org:63015/images/Unmatched-debian/)
-
-The passwd and user are the same with below.
-
+You can download the refreshed image for nvme from my personally [site](http://vimer.7766.org:63015/images/Unmatched-debian/). The `user&passwd` is `rv:rv`.
 
 # Depends
 ```bash

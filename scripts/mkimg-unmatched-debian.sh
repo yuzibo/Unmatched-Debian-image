@@ -3,7 +3,7 @@
 set -euo pipefail
 
 MODEL=${MODEL:-unmatched} # pioneer, pisces
-DEVICE="/dev/loop10"
+DEVICE="/dev/loop11"
 CHROOT_TARGET=rootfs
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ROOT_IMG=debian-${MODEL}-${TIMESTAMP}.img
@@ -146,7 +146,7 @@ EOF
     # clean source
     rm -vrf $CHROOT_TARGET/var/lib/apt/lists/*
 
-    dd if=${CHROOT_TARGET}/usr/lib/u-boot/sifive_unmatched/u-boot-spl.bin of=${DEVICE}p1 bs=4k iflag=fullblock oflag=direct conv=fsync status=progres
+    dd if=${CHROOT_TARGET}/usr/lib/u-boot/sifive_unmatched/u-boot-spl.bin of=${DEVICE}p1 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
     dd if=${CHROOT_TARGET}/usr/lib/u-boot/sifive_unmatched/u-boot.itb of=${DEVICE}p2 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
 
     umount -l "$CHROOT_TARGET/boot"
