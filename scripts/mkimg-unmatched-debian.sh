@@ -85,7 +85,7 @@ make_rootfs() {
     --include="ca-certificates locales dosfstools \
         $BASE_TOOLS $EXTRA_TOOLS $ADDONS" \
     sid "${CHROOT_TARGET}" \
-    "deb  http://mirror.iscas.ac.cn/debian/ sid main contrib non-free non-free-firmware"
+    "deb  http://deb.debian.org/debian sid main contrib non-free non-free-firmware"
 
     #debootstrap --arch=riscv64 \
     #unstable "${CHROOT_TARGET}" http://mirror.iscas.ac.cn/debian
@@ -115,12 +115,12 @@ EOF
     if [ ! -f debian-release ]; then
         echo "$TIMESTAMP" > rootfs/etc/debian-release
     else
-        cp -v debian-release rootfs/etc/debian-releasedd
+        cp -v debian-release rootfs/etc/debian-release
     fi
 
     # clean up source.list
     cat > $CHROOT_TARGET/etc/apt/sources.list << EOF
-deb http://mirror.iscas.ac.cn/debian/ sid main contrib non-free non-free-firmware
+deb https://deb.debian.org/debian/ sid main contrib non-free non-free-firmware
 EOF
 
 
@@ -151,6 +151,9 @@ EOF
 
     umount -l "$CHROOT_TARGET/boot"
     umount -l "$CHROOT_TARGET"
+    echo "at last:"
+    ls -l ./*
+    ls ../
 }
 
 

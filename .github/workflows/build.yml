@@ -1,0 +1,161 @@
+name: mkimg-Unmatched-ci
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+env:
+  ARCH: riscv
+
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    env:
+      CREATE_TARBALL: common_rootfs.tar
+    steps:
+      - name: Install Software
+        run: |
+              sudo apt update && \
+              sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
+                                  libncurses-dev gawk flex bison openssl libssl-dev tree \
+                                  gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
+                                  qemu-user-static binfmt-support mmdebstrap debootstrap  
+              wget http://ftp.us.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.4_all.deb
+              sudo apt install ./debian-archive-keyring_2023.4_all.deb
+              sudo dpkg-reconfigure binfmt-support
+              
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'mkimg-unmatched'  # TODO: make this name a global variable
+
+      - name: Make rootfs tarball
+        run: |
+              pushd mkimg-unmatched
+                sudo -E ./mkrootfs.sh
+                ls ./
+                ls ../
+                mv ${CREATE_TARBALL} ../
+              popd
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: common_rootfs
+          path: ${{ env.CREATE_TARBALL }}
+
+  mkrootfs:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [nvme]
+
+    runs-on: ubuntu-22.04
+    env:
+      BOARD: ${{ matrix.model }}
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name:  Run Configuration Commands
+        run: |
+          DATESTAMP="$(date --utc '+%Y.%m.%d')"
+          echo "Version: ${DATESTAMP}"
+
+          # Setup Artifacts Directory
+          ARTIFACTS_DIR="/opt/artifacts/"
+          mkdir -p $ARTIFACTS_DIR
+
+          # Setup environment variables
+          echo "DATESTAMP=${DATESTAMP}" >> $GITHUB_ENV
+          echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create Timestamp
+        run: |
+              echo "BUILD_ID=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_ENV
+              echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ env.ARTIFACTS_DIR }}
+
+      - name: Make Checksum file & Compress files
+        run: |
+            pushd Unmatched-Debian-image
+              zstd *.img
+              sha512sum *.zst > SHA512SUMS
+            popd
+
+      - name: 'Upload Artifact NVME'
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 30
+          name: Unmatched-${{ env.BOARD }}-${{ env.BUILD_ID }}
+          path: |
+                  Unmatched-Debian-image/*.ext4.zst
+                  Unmatched-Debian-image/SHA512SUMS
+      
+      - name: 'Upload Release'
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+                  Unmatched-Debian-image/*.zst
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  upload_checksum:
+    needs: mkrootfs
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Make Checksum file
+        run: |
+              find . -name "*.zst" | xargs -I{} mv -v {} .
+              sha256sum *.zst > SHA256SUMS
+              sha512sum *.zst > SHA512SUMS
+
+      - name: 'Upload checksum'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+                  SHA256SUMS
+                  SHA512SUMS
+          token: ${{ secrets.GITHUB_TOKEN }}

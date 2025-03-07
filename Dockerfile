@@ -10,7 +10,7 @@ RUN --mount=type=cache,sharing=shared,target=/var/cache \
     apt-get update \
     && apt-get install -y eatmydata \
     && eatmydata apt-get install -y debootstrap qemu-user-static \
-        binfmt-support debian-ports-archive-keyring gdisk kpartx \
+        binfmt-support gdisk kpartx \
         parted \
         autoconf automake autotools-dev bc binfmt-support \
         build-essential cpio curl \
@@ -25,7 +25,9 @@ RUN --mount=type=cache,sharing=shared,target=/var/cache \
 # build rootfs 
 FROM builder as build_rootfs
 WORKDIR /build
-COPY rootfs/multistrap_nvme.conf multistrap.conf
+COPY rootfs/build.sh build.sh
+#COPY rootfs/addon addon
+#COPY rootfs
 
 RUN --mount=type=cache,sharing=shared,target=/var/cache \
     --mount=type=cache,sharing=shared,target=/var/lib/apt/lists \
