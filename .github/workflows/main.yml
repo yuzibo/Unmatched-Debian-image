@@ -3,6 +3,9 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - '*'
+
 jobs:
   build-all-os:
     runs-on: ubuntu-24.04
@@ -12,7 +15,7 @@ jobs:
         - uses: actions/checkout@v2
 
         - name: Install depends
-          run: sudo apt install -y qemu-system-misc docker-compose
+          run: sudo apt install -y qemu-system-misc docker-compose qemu-user-static binfmt-support
 
         - name: Prepare
           run: |

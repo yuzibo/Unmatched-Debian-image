@@ -2,6 +2,9 @@ version: '3.5'
 
 services:
 
+  #build:
+  #  privileged: true
+
   nvme:
     privileged: true
     build:
