@@ -1,19 +1,32 @@
 # Update
 
+# 2025/03/11
+
+[prebuilt image](http://vimer.7766.org:63015/images/Unmatched-debian/202503/) you can download these images directly.
+
+[Tag 0.0.4.1](https://github.com/yuzibo/Unmatched-Debian-image/releases/tag/0.0.4.1) included nvme 
+with one only rootfs parition and sd-uboot.image. But the sd-uboot image does not work(debugging), 
+so please use the [sd-uboot.img](https://github.com/yuzibo/Unmatched-Debian-image/releases/download/0.0.4/sd-uboot.img)
+
+[Tag 0.0.5-beta](https://github.com/yuzibo/Unmatched-Debian-image/releases) include nvme rootfs with multi 
+paritions and sd-uboot does not work also, please refer to above notice. 
+
+# 2024/12/10
+
 Now you can use [mkimg-unmatched-debian.sh](./scripts/mkimg-unmatched-debian.sh) to generate one rootfs for nvme, more defail please see [README](./scripts/README.md)
 
-2024/08/28
+# 2024/08/28
 
 Now some changes from Debian lead to the image for Unmatched [pre-built](https://wiki.debian.org/InstallingDebianOn/SiFive/%20HiFiveUnmatched#Preparing_disk_image) does not work.
 
 You can download the refreshed image for nvme from my personally [site](http://vimer.7766.org:63015/images/Unmatched-debian/). The `user&passwd` is `rv:rv`.
 
-# Depends
+## Depends
 ```bash
 sudo apt install -y qemu-user-static qemu-system qemu-utils qemu-system-misc binfmt-support
 ```
 
-# How to build image
+## How to build image
 Need docker docker-compose installed, then type:
 ```bash
 sudo DOCKER_BUILDKIT=1 docker-compose build nvme

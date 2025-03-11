@@ -36,4 +36,4 @@ jobs:
           with:
             files: |
               image/nvme-rootfs*.img.xz
-              image/sd-uboot*.img
+              image/sd-uboot*.img.*

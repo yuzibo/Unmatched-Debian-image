@@ -21,7 +21,8 @@ EOF
     # Set up fstab
     cat << EOF > ${ROOTFS_POINT}/etc/fstab 
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-/dev/nvme0n1p1 /               ext4    errors=remount-ro 0       1
+/dev/nvme0n1p4 /               ext4    errors=remount-ro 0       1
+/dev/nvme0n1p3 /boot           ext4    nodev,noexec,rw   0       2
 EOF
    
     ## Add needed modules in initrd
@@ -30,7 +31,7 @@ EOF
     chroot "${ROOTFS_POINT}" sh -c "cp /usr/lib/linux-image-*/sifive/hifive-unmatched-a00.dtb /boot/"
     chroot "${ROOTFS_POINT}" sh -c "echo U_BOOT_FDT=\"hifive-unmatched-a00.dtb\" >> /etc/default/u-boot"
     chroot "${ROOTFS_POINT}" sh -c "echo 'U_BOOT_PARAMETERS=\"rw rootwait console=ttySIF0,115200 earlycon\"' >> /etc/default/u-boot"
-    chroot "${ROOTFS_POINT}" sh -c "echo 'U_BOOT_ROOT=\"root=/dev/nvme0n1p1\"' >> /etc/default/u-boot"
+    chroot "${ROOTFS_POINT}" sh -c "echo 'U_BOOT_ROOT=\"root=/dev/nvme0n1p4\"' >> /etc/default/u-boot"
 
     chroot "${ROOTFS_POINT}" sh -c "u-boot-update"
 

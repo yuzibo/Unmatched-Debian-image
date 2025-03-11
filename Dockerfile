@@ -23,7 +23,7 @@ RUN --mount=type=cache,sharing=shared,target=/var/cache \
         systemd-container texinfo zlib1g-dev wget \
     &&  update-binfmts --enable qemu-riscv64 \
     && mmdebstrap --architectures=riscv64 \
-    --include="debian-archive-keyring linux-image-riscv64 u-boot-menu u-boot-sifive" \
+    --include="debian-archive-keyring" \
     sid /tmp/riscv64-chroot \
     "deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware"
 
