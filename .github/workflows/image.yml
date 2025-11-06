@@ -1,0 +1,39 @@
+name: Auto Build Debian riscv64 Unmatched image 
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - '*'
+
+jobs:
+  build-all-os:
+    runs-on: [self-hosted, riscv64]
+    permissions:
+      contents: write
+    steps:
+        - uses: actions/checkout@v2
+
+        - name: Install depends
+          run: sudo apt install -y qemu-system-misc docker-compose qemu-user-static binfmt-support sudo
+
+        - name: Prepare
+          run: |
+            echo ${{runner.workspace}}
+            mkdir -p image 
+        - name: Build
+          run: |
+            export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
+            docker compose build
+        - name: Create Nvme Image
+          run: |
+            export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 nvme
+            docker compose up nvme 
+            ls -l image/*
+        - name: Release
+          uses: softprops/action-gh-release@v1
+          if: startsWith(github.ref, 'refs/tags/')
+          with:
+            files: |
+              image/nvme-rootfs*.img.xz
+              image/sd-uboot*.img.*
