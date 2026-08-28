@@ -87,8 +87,9 @@ chroot "${ROOTFS_POINT}" sh -c "echo 'rv:rv' | chpasswd"
 #chroot "${ROOTFS_POINT}" sh -c "usermod --password '$ROOT_WORD_HASH' root"
 #chroot "${ROOTFS_POINT}" sh -c "usermod --password "$(echo 'unmatched' | openssl passwd -1 -stdin)" root"
 chroot "${ROOTFS_POINT}" sh -c "export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true; apt clean"
-
-rm -v "${ROOTFS_POINT}"/etc/ssh/ssh_host_*
+#
+# FIXME: stop cleaning the ssh_host key on the image
+#rm -v "${ROOTFS_POINT}"/etc/ssh/ssh_host_*
 chroot "${ROOTFS_POINT}" sh -c "apt clean" 
 rm -r "${ROOTFS_POINT}"/var/lib/apt/lists/*
 
