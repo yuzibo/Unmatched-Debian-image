@@ -45,6 +45,7 @@ WORKDIR /builder
 COPY --from=builder /tmp/riscv64-chroot ./rv64-port/
 COPY create_image.sh build.sh ./
 COPY after_mkrootfs.sh ./
+COPY runtime-mount.sh ./
 # debug
 #RUN sleep infinity
 

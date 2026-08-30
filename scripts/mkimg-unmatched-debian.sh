@@ -8,6 +8,17 @@ CHROOT_TARGET=rootfs
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ROOT_IMG=debian-${MODEL}-${TIMESTAMP}.img
 
+source "$(dirname "$0")/../runtime-mount.sh"
+
+# Tear everything down if the build fails partway through.
+cleanup() {
+    unmount_runtime "$CHROOT_TARGET" 2>/dev/null || true
+    umount -l "$CHROOT_TARGET/boot" 2>/dev/null || true
+    umount -l "$CHROOT_TARGET" 2>/dev/null || true
+    losetup -d "$DEVICE" 2>/dev/null || true
+}
+trap cleanup EXIT
+
 # == packages ==
 BASE_TOOLS="file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted  ca-certificates"
 XFCE_DESKTOP="xorg xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs ntfs-3g polkitd exfat-fuse "
@@ -94,6 +105,10 @@ make_rootfs() {
 }
 
 after_mkrootfs() {
+    # Mount the runtime pseudo-filesystems(/proc /sys /dev ...) so apt/dpkg,
+    # update-initramfs and u-boot-update work inside the chroot.
+    mount_runtime "$CHROOT_TARGET"
+
     # Set up fstab
     cat > "$CHROOT_TARGET"/etc/fstab << EOF
 /dev/nvme0n1p4 /               ext4    errors=remount-ro 0       1
@@ -148,6 +163,8 @@ EOF
 
     dd if=${CHROOT_TARGET}/usr/lib/u-boot/sifive_unmatched/u-boot-spl.bin of=${DEVICE}p1 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
     dd if=${CHROOT_TARGET}/usr/lib/u-boot/sifive_unmatched/u-boot.itb of=${DEVICE}p2 bs=4k iflag=fullblock oflag=direct conv=fsync status=progress
+
+    unmount_runtime "$CHROOT_TARGET"
 
     umount -l "$CHROOT_TARGET/boot"
     umount -l "$CHROOT_TARGET"

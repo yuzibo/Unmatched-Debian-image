@@ -12,6 +12,7 @@ SD_UBOOT_IMG="${OUT_DIR}/${U_BOOT_IMG}"
 SD_DD_OPTS="bs=4k iflag=fullblock oflag=direct conv=fsync status=progress"
 PACKAGES_LIST="linux-image-riscv64 u-boot-menu u-boot-sifive sudo openssh-server openntpd"
 
+source $(pwd)/runtime-mount.sh
 source $(pwd)/after_mkrootfs.sh
 
 if [ -f ${NVME_ROOTFS_IMG} ]; then
@@ -62,9 +63,7 @@ cp -a /builder/rv64-port/* "${ROOTFS_POINT}"
 
 mount "/dev/mapper/${LOOPDEV}p3" "${ROOTFS_POINT}/boot"
 
-mount -t proc /proc "${ROOTFS_POINT}/proc"
-mount -t sysfs /sys "${ROOTFS_POINT}/sys"
-mount -o bind /dev "${ROOTFS_POINT}/dev"
+mount_runtime "${ROOTFS_POINT}"
 
 # install packages
 chroot "${ROOTFS_POINT}" sh -c "export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true; apt update"
@@ -95,9 +94,7 @@ rm -r "${ROOTFS_POINT}"/var/lib/apt/lists/*
 
 sed -i 's/^DAEMON_OPTS="/DAEMON_OPTS="-s /' "${ROOTFS_POINT}"/etc/default/openntpd
 
-umount "${ROOTFS_POINT}/proc"
-umount "${ROOTFS_POINT}/sys"
-umount "${ROOTFS_POINT}/dev"
+unmount_runtime "${ROOTFS_POINT}"
 
 umount "${ROOTFS_POINT}/boot"
 
